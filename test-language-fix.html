@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Switching Fix Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        .app-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF6B35;
+        }
+        .language-selector {
+            background: #FF6B35;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .language-selector:hover {
+            background: #e55a2b;
+        }
+        .content {
+            margin: 20px 0;
+        }
+        .test-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .language-btn {
+            padding: 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .language-btn:hover {
+            border-color: #FF6B35;
+            background: #fff5f2;
+        }
+        .language-btn.selected {
+            border-color: #FF6B35;
+            background: #FF6B35;
+            color: white;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: #FF6B35;
+            color: white;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1 class="app-title">बहुभाषी मंडी</h1>
+            <button class="language-selector" onclick="showLanguageModal()">🌐</button>
+        </div>
+        
+        <div class="content">
+            <div class="test-section">
+                <h3>Current Language Test</h3>
+                <p><strong>Current Language:</strong> <span id="current-lang">hi</span></p>
+                <p><strong>Welcome Text:</strong> <span id="welcome-text">स्वागत है</span></p>
+                <p><strong>Continue Text:</strong> <span id="continue-text">जारी रखें</span></p>
+            </div>
+            
+            <div class="test-section">
+                <h3>Direct Language Change Test</h3>
+                <div class="language-grid">
+                    <button class="language-btn selected" onclick="changeLanguage('hi')" data-lang="hi">हिंदी</button>
+                    <button class="language-btn" onclick="changeLanguage('te')" data-lang="te">తెలుగు</button>
+                    <button class="language-btn" onclick="changeLanguage('ta')" data-lang="ta">தமிழ்</button>
+                    <button class="language-btn" onclick="changeLanguage('kn')" data-lang="kn">ಕನ್ನಡ</button>
+                    <button class="language-btn" onclick="changeLanguage('bn')" data-lang="bn">বাংলা</button>
+                    <button class="language-btn" onclick="changeLanguage('mr')" data-lang="mr">मराठी</button>
+                    <button class="language-btn" onclick="changeLanguage('en')" data-lang="en">English</button>
+                </div>
+            </div>
+            
+            <div class="test-section">
+                <h3>Test Status</h3>
+                <div id="status-messages"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Translation data
+        const translations = {
+            'hi': {
+                'app_title': 'बहुभाषी मंडी',
+                'welcome': 'स्वागत है',
+                'continue': 'जारी रखें',
+                'select_language': 'भाषा चुनें',
+                'cancel': 'रद्द करें',
+                'change': 'बदलें'
+            },
+            'te': {
+                'app_title': 'బహుభాషా మార్కెట్',
+                'welcome': 'స్వాగతం',
+                'continue': 'కొనసాగించు',
+                'select_language': 'భాష ఎంచుకోండి',
+                'cancel': 'రద్దు చేయండి',
+                'change': 'మార్చండి'
+            },
+            'ta': {
+                'app_title': 'பல்மொழி சந்தை',
+                'welcome': 'வரவேற்கிறோம்',
+                'continue': 'தொடரவும்',
+                'select_language': 'மொழியைத் தேர்ந்தெடுக்கவும்',
+                'cancel': 'ரத்து செய்',
+                'change': 'மாற்று'
+            },
+            'kn': {
+                'app_title': 'ಬಹುಭಾಷಾ ಮಾರುಕಟ್ಟೆ',
+                'welcome': 'ಸ್ವಾಗತ',
+                'continue': 'ಮುಂದುವರಿಸಿ',
+                'select_language': 'ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+                'cancel': 'ರದ್ದುಮಾಡಿ',
+                'change': 'ಬದಲಾಯಿಸಿ'
+            },
+            'bn': {
+                'app_title': 'বহুভাষিক বাজার',
+                'welcome': 'স্বাগতম',
+                'continue': 'চালিয়ে যান',
+                'select_language': 'ভাষা নির্বাচন করুন',
+                'cancel': 'বাতিল',
+                'change': 'পরিবর্তন'
+            },
+            'mr': {
+                'app_title': 'बहुभाषिक बाजार',
+                'welcome': 'स्वागत आहे',
+                'continue': 'सुरू ठेवा',
+                'select_language': 'भाषा निवडा',
+                'cancel': 'रद्द करा',
+                'change': 'बदला'
+            },
+            'en': {
+                'app_title': 'Multilingual Market',
+                'welcome': 'Welcome',
+                'continue': 'Continue',
+                'select_language': 'Select Language',
+                'cancel': 'Cancel',
+                'change': 'Change'
+            }
+        };
+
+        let currentLanguage = 'hi';
+
+        function changeLanguage(lang) {
+            console.log(`Changing language to: ${lang}`);
+            
+            // Update selection
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector(`[data-lang="${lang}"]`).classList.add('selected');
+            
+            // Update language
+            currentLanguage = lang;
+            updateUI(lang);
+            
+            // Show success message
+            showStatus(`Language changed to ${lang}`, 'success');
+        }
+
+        function updateUI(language) {
+            const langTexts = translations[language] || translations['hi'];
+            
+            // Update display elements
+            document.getElementById('current-lang').textContent = language;
+            document.querySelector('.app-title').textContent = langTexts.app_title;
+            document.getElementById('welcome-text').textContent = langTexts.welcome;
+            document.getElementById('continue-text').textContent = langTexts.continue;
+            
+            // Update document language
+            document.documentElement.lang = language;
+            
+            console.log(`UI updated to ${language}`);
+        }
+
+        function showLanguageModal() {
+            const texts = translations[currentLanguage] || translations['hi'];
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3>${texts.select_language}</h3>
+                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="language-grid">
+                            <button class="language-btn ${currentLanguage === 'hi' ? 'selected' : ''}" data-lang="hi">हिंदी</button>
+                            <button class="language-btn ${currentLanguage === 'te' ? 'selected' : ''}" data-lang="te">తెలుగు</button>
+                            <button class="language-btn ${currentLanguage === 'ta' ? 'selected' : ''}" data-lang="ta">தமிழ்</button>
+                            <button class="language-btn ${currentLanguage === 'kn' ? 'selected' : ''}" data-lang="kn">ಕನ್ನಡ</button>
+                            <button class="language-btn ${currentLanguage === 'bn' ? 'selected' : ''}" data-lang="bn">বাংলা</button>
+                            <button class="language-btn ${currentLanguage === 'mr' ? 'selected' : ''}" data-lang="mr">मराठी</button>
+                            <button class="language-btn ${currentLanguage === 'en' ? 'selected' : ''}" data-lang="en">English</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">${texts.cancel}</button>
+                        <button class="btn btn-primary" onclick="changeLanguageFromModal(this)">${texts.change}</button>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners for language selection
+            modal.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    modal.querySelectorAll('.language-btn').forEach(b => b.classList.remove('selected'));
+                    e.target.classList.add('selected');
+                });
+            });
+            
+            document.body.appendChild(modal);
+        }
+
+        function changeLanguageFromModal(button) {
+            const modal = button.closest('.modal-overlay');
+            const selectedBtn = modal.querySelector('.language-btn.selected');
+            
+            if (selectedBtn) {
+                const newLanguage = selectedBtn.dataset.lang;
+                if (newLanguage !== currentLanguage) {
+                    changeLanguage(newLanguage);
+                    showStatus(`Language changed to ${newLanguage} via modal`, 'success');
+                }
+            }
+            
+            modal.remove();
+        }
+
+        function showStatus(message, type) {
+            const statusContainer = document.getElementById('status-messages');
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            
+            statusContainer.appendChild(statusDiv);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                if (statusDiv.parentElement) {
+                    statusDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Test on load
+        window.addEventListener('load', () => {
+            showStatus('Language switching test page loaded', 'success');
+            console.log('Test page ready');
+        });
+    </script>
+</body>
+</html>

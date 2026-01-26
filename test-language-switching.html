@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Switching Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .language-btn { margin: 5px; padding: 10px 15px; cursor: pointer; }
+        .language-btn.selected { background: #007bff; color: white; }
+        .test-result { margin: 10px 0; padding: 10px; background: #f8f9fa; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Language Switching Test</h1>
+    
+    <div class="test-section">
+        <h2>Current Language: <span id="current-lang">hi</span></h2>
+        <p>App Title: <span id="app-title">बहुभाषी मंडी</span></p>
+        <p>Welcome Text: <span id="welcome-text">स्वागत है</span></p>
+        <p>Continue Button: <span id="continue-text">जारी रखें</span></p>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Language Selection:</h3>
+        <button class="language-btn selected" data-lang="hi">हिंदी</button>
+        <button class="language-btn" data-lang="te">తెలుగు</button>
+        <button class="language-btn" data-lang="ta">தமிழ்</button>
+        <button class="language-btn" data-lang="kn">ಕನ್ನಡ</button>
+        <button class="language-btn" data-lang="bn">বাংলা</button>
+        <button class="language-btn" data-lang="mr">मराठी</button>
+        <button class="language-btn" data-lang="en">English</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Results:</h3>
+        <div id="test-results"></div>
+        <button onclick="runTests()">Run Language Tests</button>
+    </div>
+
+    <script>
+        // Mock translation data (same as in main.js)
+        const translations = {
+            'hi': {
+                'app_title': 'बहुभाषी मंडी',
+                'welcome': 'स्वागत है',
+                'continue': 'जारी रखें'
+            },
+            'te': {
+                'app_title': 'బహుభాషా మార్కెట్',
+                'welcome': 'స్వాగతం',
+                'continue': 'కొనసాగించు'
+            },
+            'ta': {
+                'app_title': 'பல்மொழி சந்தை',
+                'welcome': 'வரவேற்கிறோம்',
+                'continue': 'தொடரவும்'
+            },
+            'kn': {
+                'app_title': 'ಬಹುಭಾಷಾ ಮಾರುಕಟ್ಟೆ',
+                'welcome': 'ಸ್ವಾಗತ',
+                'continue': 'ಮುಂದುವರಿಸಿ'
+            },
+            'bn': {
+                'app_title': 'বহুভাষিক বাজার',
+                'welcome': 'স্বাগতম',
+                'continue': 'চালিয়ে যান'
+            },
+            'mr': {
+                'app_title': 'बहुभाषिक बाजार',
+                'welcome': 'स्वागत आहे',
+                'continue': 'सुरू ठेवा'
+            },
+            'en': {
+                'app_title': 'Multilingual Market',
+                'welcome': 'Welcome',
+                'continue': 'Continue'
+            }
+        };
+
+        let currentLanguage = 'hi';
+
+        // Language selection functionality
+        document.querySelectorAll('.language-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const lang = e.target.dataset.lang;
+                selectLanguage(lang);
+            });
+        });
+
+        function selectLanguage(lang) {
+            // Update selection
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector(`[data-lang="${lang}"]`).classList.add('selected');
+            
+            // Update language
+            currentLanguage = lang;
+            updateUILanguage(lang);
+        }
+
+        function updateUILanguage(language) {
+            const langTexts = translations[language] || translations['hi'];
+            
+            // Update display elements
+            document.getElementById('current-lang').textContent = language;
+            document.getElementById('app-title').textContent = langTexts.app_title;
+            document.getElementById('welcome-text').textContent = langTexts.welcome;
+            document.getElementById('continue-text').textContent = langTexts.continue;
+            
+            console.log(`Language updated to: ${language}`);
+        }
+
+        function runTests() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '';
+            
+            const languages = ['hi', 'te', 'ta', 'kn', 'bn', 'mr', 'en'];
+            let passedTests = 0;
+            
+            languages.forEach(lang => {
+                const langTexts = translations[lang];
+                const testResult = document.createElement('div');
+                testResult.className = 'test-result';
+                
+                // Test if translations exist
+                if (langTexts && langTexts.app_title && langTexts.welcome && langTexts.continue) {
+                    testResult.className += ' success';
+                    testResult.innerHTML = `✅ ${lang.toUpperCase()}: All translations available`;
+                    passedTests++;
+                } else {
+                    testResult.className += ' error';
+                    testResult.innerHTML = `❌ ${lang.toUpperCase()}: Missing translations`;
+                }
+                
+                results.appendChild(testResult);
+            });
+            
+            // Summary
+            const summary = document.createElement('div');
+            summary.className = 'test-result';
+            if (passedTests === languages.length) {
+                summary.className += ' success';
+                summary.innerHTML = `🎉 All tests passed! ${passedTests}/${languages.length} languages supported`;
+            } else {
+                summary.className += ' error';
+                summary.innerHTML = `⚠️ Some tests failed. ${passedTests}/${languages.length} languages working`;
+            }
+            results.appendChild(summary);
+        }
+
+        // Test language switching functionality
+        function testLanguageSwitching() {
+            console.log('Testing language switching...');
+            
+            const testLanguages = ['en', 'te', 'ta', 'hi'];
+            let testIndex = 0;
+            
+            const testInterval = setInterval(() => {
+                if (testIndex < testLanguages.length) {
+                    const lang = testLanguages[testIndex];
+                    console.log(`Testing language: ${lang}`);
+                    selectLanguage(lang);
+                    testIndex++;
+                } else {
+                    clearInterval(testInterval);
+                    console.log('Language switching test completed');
+                }
+            }, 2000);
+        }
+
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            runTests();
+            console.log('Language switching test page loaded');
+        });
+    </script>
+</body>
+</html>

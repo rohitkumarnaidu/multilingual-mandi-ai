@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Persistence Fix Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #f5f5f5;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .btn { 
+            background: #FF6B35; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            margin: 8px; 
+            cursor: pointer; 
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .btn:hover { background: #e55a2b; }
+        .btn-secondary { background: #6c757d; }
+        .btn-secondary:hover { background: #545b62; }
+        .status { 
+            margin: 15px 0; 
+            padding: 15px; 
+            border-radius: 5px; 
+            border-left: 4px solid #007bff;
+            background: #f8f9fa;
+        }
+        .success { border-left-color: #28a745; background: #d4edda; color: #155724; }
+        .error { border-left-color: #dc3545; background: #f8d7da; color: #721c24; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; color: #856404; }
+        .info { border-left-color: #17a2b8; background: #d1ecf1; color: #0c5460; }
+        .test-title { 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #FF6B35; 
+            margin: 20px 0; 
+            padding: 15px;
+            background: #fff5f2;
+            border-radius: 5px;
+            border-left: 4px solid #FF6B35;
+        }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .step {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .step h4 {
+            margin: 0 0 10px 0;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔧 Language Persistence Fix Test</h1>
+        <p>This test verifies that the language switching fix is working correctly.</p>
+        
+        <div class="test-title" id="test-title">बहुभाषी मंडी</div>
+        
+        <div class="step">
+            <h4>Step 1: Test Direct Language Changes</h4>
+            <p>Click these buttons to test if language changes work immediately:</p>
+            <button class="btn" onclick="testLanguageChange('hi')">हिंदी (Hindi)</button>
+            <button class="btn" onclick="testLanguageChange('te')">తెలుగు (Telugu)</button>
+            <button class="btn" onclick="testLanguageChange('ta')">தமிழ் (Tamil)</button>
+            <button class="btn" onclick="testLanguageChange('en')">English</button>
+        </div>
+        
+        <div class="step">
+            <h4>Step 2: Test Persistence</h4>
+            <p>Test if language changes persist correctly:</p>
+            <button class="btn-secondary btn" onclick="saveLanguage()">💾 Save Current Language</button>
+            <button class="btn-secondary btn" onclick="simulateReload()">🔄 Simulate App Reload</button>
+            <button class="btn-secondary btn" onclick="clearStorage()">🗑️ Clear Storage</button>
+        </div>
+        
+        <div class="step">
+            <h4>Step 3: Test Flag Mechanism</h4>
+            <p>Test the languageChangeInProgress flag:</p>
+            <button class="btn-secondary btn" onclick="testFlagMechanism()">🚩 Test Flag Protection</button>
+            <button class="btn-secondary btn" onclick="checkCurrentState()">📊 Check Current State</button>
+        </div>
+        
+        <div class="status" id="status">Ready to test language persistence fix...</div>
+        
+        <div class="code-block" id="debug-info">
+            <strong>Debug Information:</strong><br>
+            Current Language: <span id="current-lang">hi</span><br>
+            Flag Status: <span id="flag-status">false</span><br>
+            Storage: <span id="storage-status">empty</span><br>
+            Last Action: <span id="last-action">none</span>
+        </div>
+    </div>
+
+    <script>
+        // Simple translations for testing
+        const translations = {
+            'hi': 'बहुभाषी मंडी',
+            'te': 'బహుభాషా మార్కెట్',
+            'ta': 'பல்மொழி சந்தை',
+            'en': 'Multilingual Market'
+        };
+        
+        let currentLanguage = 'hi';
+        let languageChangeInProgress = false;
+        
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+        
+        function updateDebugInfo() {
+            document.getElementById('current-lang').textContent = currentLanguage;
+            document.getElementById('flag-status').textContent = languageChangeInProgress;
+            
+            const saved = localStorage.getItem('mandiPreferences');
+            if (saved) {
+                try {
+                    const prefs = JSON.parse(saved);
+                    document.getElementById('storage-status').textContent = `Language: ${prefs.language || 'none'}`;
+                } catch (error) {
+                    document.getElementById('storage-status').textContent = 'error';
+                }
+            } else {
+                document.getElementById('storage-status').textContent = 'empty';
+            }
+        }
+        
+        function testLanguageChange(lang) {
+            console.log(`Testing language change to: ${lang}`);
+            
+            // Simulate the flag mechanism from the main app
+            languageChangeInProgress = true;
+            
+            const titleEl = document.getElementById('test-title');
+            const oldText = titleEl.textContent;
+            const newText = translations[lang];
+            
+            if (newText) {
+                titleEl.textContent = newText;
+                currentLanguage = lang;
+                
+                updateStatus(`✅ Language changed to ${lang}: ${newText}`, 'success');
+                document.getElementById('last-action').textContent = `Changed to ${lang}`;
+                
+                // Clear flag after delay (simulating the main app)
+                setTimeout(() => {
+                    languageChangeInProgress = false;
+                    updateDebugInfo();
+                }, 1000);
+                
+                updateDebugInfo();
+            } else {
+                updateStatus(`❌ No translation found for ${lang}`, 'error');
+            }
+        }
+        
+        function saveLanguage() {
+            const preferences = {
+                language: currentLanguage,
+                role: null,
+                onboardingCompleted: false, // Keep false to avoid dashboard redirect
+                timestamp: Date.now(),
+                version: '1.0'
+            };
+            
+            try {
+                localStorage.setItem('mandiPreferences', JSON.stringify(preferences));
+                updateStatus(`💾 Saved language "${currentLanguage}" to storage`, 'success');
+                document.getElementById('last-action').textContent = `Saved ${currentLanguage}`;
+                updateDebugInfo();
+            } catch (error) {
+                updateStatus(`❌ Failed to save: ${error.message}`, 'error');
+            }
+        }
+        
+        function simulateReload() {
+            updateStatus('🔄 Simulating app reload...', 'info');
+            document.getElementById('last-action').textContent = 'Simulating reload';
+            
+            // Simulate the checkUserPreferences function from main app
+            setTimeout(() => {
+                const saved = localStorage.getItem('mandiPreferences');
+                if (saved) {
+                    try {
+                        const preferences = JSON.parse(saved);
+                        
+                        // Simulate the flag check
+                        if (languageChangeInProgress) {
+                            updateStatus('🚩 Language change in progress - skipping preference override', 'warning');
+                            return;
+                        }
+                        
+                        if (preferences.language) {
+                            // This would normally override the current language
+                            const oldLang = currentLanguage;
+                            testLanguageChange(preferences.language);
+                            
+                            if (oldLang !== preferences.language) {
+                                updateStatus(`🔄 Loaded saved language "${preferences.language}" from storage`, 'info');
+                            } else {
+                                updateStatus(`✅ Language already matches saved preference: ${preferences.language}`, 'success');
+                            }
+                        }
+                    } catch (error) {
+                        updateStatus(`❌ Error loading preferences: ${error.message}`, 'error');
+                    }
+                } else {
+                    updateStatus('ℹ️ No saved preferences found', 'info');
+                }
+            }, 500);
+        }
+        
+        function testFlagMechanism() {
+            updateStatus('🚩 Testing flag protection mechanism...', 'info');
+            
+            // Set flag to true
+            languageChangeInProgress = true;
+            updateDebugInfo();
+            
+            // Try to change language while flag is set
+            setTimeout(() => {
+                updateStatus('🚩 Flag is set - testing preference override protection', 'warning');
+                simulateReload();
+                
+                // Clear flag after test
+                setTimeout(() => {
+                    languageChangeInProgress = false;
+                    updateDebugInfo();
+                    updateStatus('✅ Flag mechanism test completed', 'success');
+                }, 2000);
+            }, 1000);
+        }
+        
+        function checkCurrentState() {
+            const saved = localStorage.getItem('mandiPreferences');
+            let message = `Current Language: ${currentLanguage}\\n`;
+            message += `Flag Status: ${languageChangeInProgress}\\n`;
+            
+            if (saved) {
+                try {
+                    const prefs = JSON.parse(saved);
+                    message += `Saved Language: ${prefs.language || 'none'}\\n`;
+                    message += `Timestamp: ${new Date(prefs.timestamp).toLocaleString()}`;
+                } catch (error) {
+                    message += `Storage Error: ${error.message}`;
+                }
+            } else {
+                message += 'No saved preferences';
+            }
+            
+            alert(message);
+            updateStatus('📊 Current state checked', 'info');
+            document.getElementById('last-action').textContent = 'Checked state';
+        }
+        
+        function clearStorage() {
+            localStorage.removeItem('mandiPreferences');
+            updateStatus('🗑️ Storage cleared', 'info');
+            document.getElementById('last-action').textContent = 'Cleared storage';
+            updateDebugInfo();
+        }
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            updateDebugInfo();
+            updateStatus('Page loaded - ready for testing', 'success');
+            
+            // Update debug info every 2 seconds
+            setInterval(updateDebugInfo, 2000);
+        });
+    </script>
+</body>
+</html>

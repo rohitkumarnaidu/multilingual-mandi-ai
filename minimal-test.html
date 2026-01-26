@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Language Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-title { font-size: 24px; font-weight: bold; color: #FF6B35; margin: 20px 0; }
+        .btn { background: #FF6B35; color: white; border: none; padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .status { margin: 10px 0; padding: 10px; background: #f0f0f0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Minimal Language Switching Test</h1>
+    
+    <div class="test-title" id="test-title">बहुभाषी मंडी</div>
+    
+    <div>
+        <button class="btn" onclick="changeToEnglish()">Change to English</button>
+        <button class="btn" onclick="changeToTelugu()">Change to Telugu</button>
+        <button class="btn" onclick="changeToHindi()">Change to Hindi</button>
+    </div>
+    
+    <div class="status" id="status">Ready to test...</div>
+    
+    <div style="margin-top: 20px;">
+        <h3>Console Output:</h3>
+        <div id="console-output" style="background: #000; color: #0f0; padding: 10px; font-family: monospace; height: 200px; overflow-y: auto;"></div>
+    </div>
+
+    <script>
+        // Simple translations
+        const translations = {
+            'hi': 'बहुभाषी मंडी',
+            'te': 'బహుభాషా మార్కెట్',
+            'ta': 'பல்மொழி சந்தை',
+            'en': 'Multilingual Market'
+        };
+        
+        let currentLang = 'hi';
+        
+        function log(message) {
+            console.log(message);
+            const output = document.getElementById('console-output');
+            output.innerHTML += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function updateTitle(lang) {
+            log(`Attempting to change language to: ${lang}`);
+            
+            const titleEl = document.getElementById('test-title');
+            const statusEl = document.getElementById('status');
+            
+            if (!titleEl) {
+                log('ERROR: Title element not found');
+                return;
+            }
+            
+            const oldText = titleEl.textContent;
+            const newText = translations[lang];
+            
+            log(`Old text: "${oldText}"`);
+            log(`New text: "${newText}"`);
+            
+            if (newText) {
+                titleEl.textContent = newText;
+                currentLang = lang;
+                
+                const actualText = titleEl.textContent;
+                log(`Actual text after change: "${actualText}"`);
+                
+                if (actualText === newText) {
+                    statusEl.textContent = `✅ Successfully changed to ${lang}: ${newText}`;
+                    statusEl.style.background = '#d4edda';
+                    log(`SUCCESS: Language changed to ${lang}`);
+                } else {
+                    statusEl.textContent = `❌ Failed to change text`;
+                    statusEl.style.background = '#f8d7da';
+                    log(`FAILED: Text did not change properly`);
+                }
+            } else {
+                statusEl.textContent = `❌ No translation found for ${lang}`;
+                statusEl.style.background = '#f8d7da';
+                log(`ERROR: No translation found for ${lang}`);
+            }
+        }
+        
+        function changeToEnglish() {
+            updateTitle('en');
+        }
+        
+        function changeToTelugu() {
+            updateTitle('te');
+        }
+        
+        function changeToHindi() {
+            updateTitle('hi');
+        }
+        
+        // Test on load
+        window.addEventListener('load', () => {
+            log('Minimal test page loaded');
+            log('Initial language: ' + currentLang);
+            log('Initial title: ' + document.getElementById('test-title').textContent);
+            
+            // Auto test after 2 seconds
+            setTimeout(() => {
+                log('Starting automatic test...');
+                changeToEnglish();
+                
+                setTimeout(() => {
+                    changeToTelugu();
+                    
+                    setTimeout(() => {
+                        changeToHindi();
+                        log('Automatic test completed');
+                    }, 1000);
+                }, 1000);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

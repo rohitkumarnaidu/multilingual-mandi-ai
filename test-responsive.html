@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive UI Framework Test</title>
+    <link rel="stylesheet" href="public/css/main.css">
+    <style>
+        .test-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        .test-item {
+            background: var(--surface-color);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .viewport-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="viewport-info" id="viewport-info">
+        Viewport: <span id="viewport-size"></span>
+    </div>
+    
+    <div class="test-container">
+        <h1 class="text-center text-2xl font-bold mb-xl">Responsive UI Framework Test</h1>
+        
+        <!-- Grid System Test -->
+        <div class="test-section">
+            <h2 class="test-title">Grid System Test</h2>
+            
+            <h3 class="mb-md">Auto-fit Grid (120px min)</h3>
+            <div class="grid grid-auto gap-md mb-lg">
+                <div class="test-item">Item 1</div>
+                <div class="test-item">Item 2</div>
+                <div class="test-item">Item 3</div>
+                <div class="test-item">Item 4</div>
+                <div class="test-item">Item 5</div>
+            </div>
+            
+            <h3 class="mb-md">Responsive Grid (2 cols on mobile, 4 on desktop)</h3>
+            <div class="grid grid-2 md-grid-4 gap-md mb-lg">
+                <div class="test-item">Responsive 1</div>
+                <div class="test-item">Responsive 2</div>
+                <div class="test-item">Responsive 3</div>
+                <div class="test-item">Responsive 4</div>
+            </div>
+        </div>
+        
+        <!-- Touch Target Test -->
+        <div class="test-section">
+            <h2 class="test-title">Touch Target Test (44px minimum)</h2>
+            <div class="flex flex-col gap-md">
+                <button class="btn-primary">Primary Button (44px min)</button>
+                <button class="btn-secondary">Secondary Button (44px min)</button>
+                <button class="btn-outline">Outline Button (44px min)</button>
+                <div class="flex gap-md">
+                    <button class="btn-icon">🏠</button>
+                    <button class="btn-icon">💰</button>
+                    <button class="btn-icon">🤝</button>
+                    <button class="btn-icon">📊</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Language Grid Test -->
+        <div class="test-section">
+            <h2 class="test-title">Language Selection Grid</h2>
+            <div class="language-grid">
+                <button class="language-btn">हिंदी</button>
+                <button class="language-btn selected">తెలుగు</button>
+                <button class="language-btn">தமிழ்</button>
+                <button class="language-btn">ಕನ್ನಡ</button>
+                <button class="language-btn">বাংলা</button>
+                <button class="language-btn">मराठी</button>
+                <button class="language-btn">English</button>
+            </div>
+        </div>
+        
+        <!-- Role Grid Test -->
+        <div class="test-section">
+            <h2 class="test-title">Role Selection Grid</h2>
+            <div class="role-grid">
+                <button class="role-btn selected">
+                    <span class="role-icon">🏪</span>
+                    <span class="role-text">विक्रेता</span>
+                </button>
+                <button class="role-btn">
+                    <span class="role-icon">🛒</span>
+                    <span class="role-text">खरीदार</span>
+                </button>
+                <button class="role-btn">
+                    <span class="role-icon">👨‍🌾</span>
+                    <span class="role-text">किसान</span>
+                </button>
+                <button class="role-btn">
+                    <span class="role-icon">💼</span>
+                    <span class="role-text">व्यापारी</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Navigation Test -->
+        <div class="test-section">
+            <h2 class="test-title">Navigation Pattern Test</h2>
+            <div class="flex justify-center">
+                <nav class="flex gap-md p-md border rounded-md">
+                    <button class="nav-btn active">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">होम</span>
+                    </button>
+                    <button class="nav-btn">
+                        <span class="nav-icon">💰</span>
+                        <span class="nav-text">कीमतें</span>
+                    </button>
+                    <button class="nav-btn">
+                        <span class="nav-icon">🤝</span>
+                        <span class="nav-text">बातचीत</span>
+                    </button>
+                    <button class="nav-btn">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">जानकारी</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+        
+        <!-- Card Component Test -->
+        <div class="test-section">
+            <h2 class="test-title">Card Component Test</h2>
+            <div class="grid grid-1 md-grid-3 gap-md">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="font-medium">Card Title 1</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>This is a card with header and body content.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="font-medium mb-sm">Simple Card</h3>
+                        <p>This card only has body content.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="font-medium">Full Card</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>This card has all sections.</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn-primary btn-sm">Action</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Responsive Breakpoint Test -->
+        <div class="test-section">
+            <h2 class="test-title">Responsive Breakpoint Test</h2>
+            <div class="grid gap-md">
+                <div class="test-item xs-hidden">Hidden on XS (< 480px)</div>
+                <div class="test-item sm-hidden">Hidden on SM (480-767px)</div>
+                <div class="test-item md-hidden">Hidden on MD (768-1023px)</div>
+                <div class="test-item lg-hidden">Hidden on LG (1024px+)</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            let breakpoint = '';
+            
+            if (width < 480) breakpoint = 'XS';
+            else if (width < 768) breakpoint = 'SM';
+            else if (width < 1024) breakpoint = 'MD';
+            else breakpoint = 'LG';
+            
+            document.getElementById('viewport-size').textContent = `${width}x${height} (${breakpoint})`;
+        }
+        
+        updateViewportInfo();
+        window.addEventListener('resize', updateViewportInfo);
+        
+        // Test touch targets
+        document.querySelectorAll('button').forEach(btn => {
+            const rect = btn.getBoundingClientRect();
+            if (rect.width < 44 || rect.height < 44) {
+                console.warn('Touch target too small:', btn, `${rect.width}x${rect.height}`);
+                btn.style.border = '2px solid red';
+            }
+        });
+    </script>
+</body>
+</html>

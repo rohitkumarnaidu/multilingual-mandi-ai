@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Force Refresh Multilingual Mandi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #FF6B35;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .btn:hover { background: #e55a2b; }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Force Refresh Multilingual Mandi</h1>
+        <p>This will clear all caches and force a fresh load of the application.</p>
+        
+        <div id="status" class="status">
+            Ready to clear caches and refresh...
+        </div>
+        
+        <button class="btn" onclick="forceRefresh()">🗑️ Clear All Caches & Refresh</button>
+        <button class="btn" onclick="openMainApp()">🏠 Open Main App</button>
+        <button class="btn" onclick="openDebugTool()">🔍 Open Debug Tool</button>
+        
+        <div style="margin-top: 30px; text-align: left;">
+            <h3>What this does:</h3>
+            <ul>
+                <li>Unregisters all service workers</li>
+                <li>Clears all browser caches</li>
+                <li>Clears localStorage and sessionStorage</li>
+                <li>Clears IndexedDB</li>
+                <li>Forces a hard refresh of the main app</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function forceRefresh() {
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = '🔄 Clearing caches...';
+            
+            try {
+                // 1. Unregister all service workers
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (let registration of registrations) {
+                        await registration.unregister();
+                        console.log('Service worker unregistered:', registration);
+                    }
+                    statusEl.innerHTML += '<br>✅ Service workers cleared';
+                }
+                
+                // 2. Clear all caches
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(
+                        cacheNames.map(cacheName => caches.delete(cacheName))
+                    );
+                    statusEl.innerHTML += '<br>✅ Browser caches cleared';
+                }
+                
+                // 3. Clear localStorage and sessionStorage
+                localStorage.clear();
+                sessionStorage.clear();
+                statusEl.innerHTML += '<br>✅ Local storage cleared';
+                
+                // 4. Clear IndexedDB
+                if ('indexedDB' in window) {
+                    const databases = await indexedDB.databases();
+                    await Promise.all(
+                        databases.map(db => {
+                            return new Promise((resolve, reject) => {
+                                const deleteReq = indexedDB.deleteDatabase(db.name);
+                                deleteReq.onsuccess = () => resolve();
+                                deleteReq.onerror = () => reject(deleteReq.error);
+                            });
+                        })
+                    );
+                    statusEl.innerHTML += '<br>✅ IndexedDB cleared';
+                }
+                
+                statusEl.innerHTML += '<br><br>🎉 All caches cleared! Opening fresh app in 3 seconds...';
+                
+                // 5. Open main app with cache busting
+                setTimeout(() => {
+                    const timestamp = Date.now();
+                    window.open(`http://localhost:3000?v=${timestamp}`, '_blank');
+                }, 3000);
+                
+            } catch (error) {
+                statusEl.innerHTML = `❌ Error clearing caches: ${error.message}`;
+                console.error('Error clearing caches:', error);
+            }
+        }
+        
+        function openMainApp() {
+            const timestamp = Date.now();
+            window.open(`http://localhost:3000?v=${timestamp}`, '_blank');
+        }
+        
+        function openDebugTool() {
+            window.open('comprehensive-debug.html', '_blank');
+        }
+    </script>
+</body>
+</html>

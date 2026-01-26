@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Language Switching Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .debug-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .btn {
+            background: #FF6B35;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover { background: #e55a2b; }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover { background: #545b62; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔍 Comprehensive Language Switching Debug</h1>
+        <p>This tool will systematically check all aspects of the language switching functionality.</p>
+        
+        <div class="grid">
+            <div>
+                <div class="test-section">
+                    <h3>1. Backend Connectivity</h3>
+                    <div id="backend-status"></div>
+                    <button class="btn" onclick="testBackend()">Test Backend</button>
+                </div>
+                
+                <div class="test-section">
+                    <h3>2. Static Files</h3>
+                    <div id="static-status"></div>
+                    <button class="btn" onclick="testStaticFiles()">Test Static Files</button>
+                </div>
+                
+                <div class="test-section">
+                    <h3>3. JavaScript Loading</h3>
+                    <div id="js-status"></div>
+                    <button class="btn" onclick="testJavaScript()">Test JavaScript</button>
+                </div>
+                
+                <div class="test-section">
+                    <h3>4. CSS Loading</h3>
+                    <div id="css-status"></div>
+                    <button class="btn" onclick="testCSS()">Test CSS</button>
+                </div>
+            </div>
+            
+            <div>
+                <div class="test-section">
+                    <h3>5. Main App Instance</h3>
+                    <div id="app-status"></div>
+                    <button class="btn" onclick="testMainApp()">Test Main App</button>
+                </div>
+                
+                <div class="test-section">
+                    <h3>6. Language Functions</h3>
+                    <div id="lang-functions-status"></div>
+                    <button class="btn" onclick="testLanguageFunctions()">Test Functions</button>
+                </div>
+                
+                <div class="test-section">
+                    <h3>7. DOM Elements</h3>
+                    <div id="dom-status"></div>
+                    <button class="btn" onclick="testDOMElements()">Test DOM</button>
+                </div>
+                
+                <div class="test-section">
+                    <h3>8. Event Listeners</h3>
+                    <div id="events-status"></div>
+                    <button class="btn" onclick="testEventListeners()">Test Events</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>9. Live Language Test</h3>
+            <div id="live-test-status"></div>
+            <div style="margin: 10px 0;">
+                <button class="btn" onclick="testLanguageChange('hi')">Test Hindi</button>
+                <button class="btn" onclick="testLanguageChange('te')">Test Telugu</button>
+                <button class="btn" onclick="testLanguageChange('ta')">Test Tamil</button>
+                <button class="btn" onclick="testLanguageChange('en')">Test English</button>
+            </div>
+            <div>
+                <strong>Current App Title:</strong> <span id="current-title">Loading...</span><br>
+                <strong>Current Language:</strong> <span id="current-lang">Loading...</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>10. Full Integration Test</h3>
+            <div id="integration-status"></div>
+            <button class="btn" onclick="runFullTest()">Run Full Test</button>
+            <button class="btn btn-secondary" onclick="clearResults()">Clear Results</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Debug Console</h3>
+            <pre id="debug-console">Ready for testing...\n</pre>
+        </div>
+    </div>
+
+    <script>
+        let debugLog = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            debugLog.push(logMessage);
+            
+            const console = document.getElementById('debug-console');
+            console.textContent = debugLog.slice(-20).join('\n') + '\n';
+            console.scrollTop = console.scrollHeight;
+            
+            console.log(logMessage);
+        }
+        
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        async function testBackend() {
+            log('Testing backend connectivity...');
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (response.ok && data.status === 'healthy') {
+                    showStatus('backend-status', '✅ Backend is healthy and running', 'success');
+                    log('Backend test: SUCCESS');
+                } else {
+                    showStatus('backend-status', '❌ Backend responded but not healthy', 'error');
+                    log('Backend test: FAILED - Unhealthy response');
+                }
+            } catch (error) {
+                showStatus('backend-status', `❌ Backend connection failed: ${error.message}`, 'error');
+                log(`Backend test: ERROR - ${error.message}`);
+            }
+        }
+        
+        async function testStaticFiles() {
+            log('Testing static file serving...');
+            const files = [
+                { path: '/js/main.js', name: 'Main JavaScript' },
+                { path: '/css/main.css', name: 'Main CSS' },
+                { path: '/manifest.json', name: 'PWA Manifest' }
+            ];
+            
+            let allGood = true;
+            let results = [];
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file.path);
+                    if (response.ok) {
+                        results.push(`✅ ${file.name}: OK`);
+                        log(`Static file ${file.path}: OK`);
+                    } else {
+                        results.push(`❌ ${file.name}: ${response.status}`);
+                        log(`Static file ${file.path}: FAILED - ${response.status}`);
+                        allGood = false;
+                    }
+                } catch (error) {
+                    results.push(`❌ ${file.name}: ${error.message}`);
+                    log(`Static file ${file.path}: ERROR - ${error.message}`);
+                    allGood = false;
+                }
+            }
+            
+            showStatus('static-status', results.join('<br>'), allGood ? 'success' : 'error');
+        }
+        
+        function testJavaScript() {
+            log('Testing JavaScript loading and execution...');
+            let results = [];
+            let allGood = true;
+            
+            // Check if main.js loaded
+            const scripts = Array.from(document.scripts);
+            const mainScript = scripts.find(s => s.src.includes('main.js'));
+            
+            if (mainScript) {
+                results.push('✅ main.js script tag found');
+                log('main.js script tag: FOUND');
+            } else {
+                results.push('❌ main.js script tag not found');
+                log('main.js script tag: NOT FOUND');
+                allGood = false;
+            }
+            
+            // Check if MandiApp class exists
+            if (typeof MandiApp !== 'undefined') {
+                results.push('✅ MandiApp class available');
+                log('MandiApp class: AVAILABLE');
+            } else {
+                results.push('❌ MandiApp class not available');
+                log('MandiApp class: NOT AVAILABLE');
+                allGood = false;
+            }
+            
+            // Check if window.mandiApp exists
+            if (window.mandiApp) {
+                results.push('✅ window.mandiApp instance exists');
+                log('window.mandiApp: EXISTS');
+            } else {
+                results.push('❌ window.mandiApp instance not found');
+                log('window.mandiApp: NOT FOUND');
+                allGood = false;
+            }
+            
+            showStatus('js-status', results.join('<br>'), allGood ? 'success' : 'error');
+        }
+        
+        function testCSS() {
+            log('Testing CSS loading...');
+            let results = [];
+            let allGood = true;
+            
+            // Check if CSS is loaded
+            const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+            const mainCSS = links.find(l => l.href.includes('main.css'));
+            
+            if (mainCSS) {
+                results.push('✅ main.css link found');
+                log('main.css link: FOUND');
+            } else {
+                results.push('❌ main.css link not found');
+                log('main.css link: NOT FOUND');
+                allGood = false;
+            }
+            
+            // Check if CSS variables are applied
+            const root = document.documentElement;
+            const primaryColor = getComputedStyle(root).getPropertyValue('--primary-color');
+            
+            if (primaryColor && primaryColor.trim()) {
+                results.push(`✅ CSS variables loaded (primary: ${primaryColor.trim()})`);
+                log(`CSS variables: LOADED (${primaryColor.trim()})`);
+            } else {
+                results.push('❌ CSS variables not loaded');
+                log('CSS variables: NOT LOADED');
+                allGood = false;
+            }
+            
+            showStatus('css-status', results.join('<br>'), allGood ? 'success' : 'error');
+        }
+        
+        function testMainApp() {
+            log('Testing main app instance...');
+            let results = [];
+            let allGood = true;
+            
+            if (window.mandiApp) {
+                results.push('✅ MandiApp instance found');
+                log('MandiApp instance: FOUND');
+                
+                // Check properties
+                const props = ['currentLanguage', 'currentRole', 'isOnline'];
+                props.forEach(prop => {
+                    if (window.mandiApp.hasOwnProperty(prop)) {
+                        results.push(`✅ Property ${prop}: ${window.mandiApp[prop]}`);
+                        log(`Property ${prop}: ${window.mandiApp[prop]}`);
+                    } else {
+                        results.push(`❌ Property ${prop}: missing`);
+                        log(`Property ${prop}: MISSING`);
+                        allGood = false;
+                    }
+                });
+            } else {
+                results.push('❌ MandiApp instance not found');
+                log('MandiApp instance: NOT FOUND');
+                allGood = false;
+            }
+            
+            showStatus('app-status', results.join('<br>'), allGood ? 'success' : 'error');
+        }
+        
+        function testLanguageFunctions() {
+            log('Testing language-related functions...');
+            let results = [];
+            let allGood = true;
+            
+            if (window.mandiApp) {
+                const functions = ['updateUILanguage', 'translateUIElements', 'showLanguageSelector', 'changeLanguageFromModal'];
+                
+                functions.forEach(func => {
+                    if (typeof window.mandiApp[func] === 'function') {
+                        results.push(`✅ Function ${func}: available`);
+                        log(`Function ${func}: AVAILABLE`);
+                    } else {
+                        results.push(`❌ Function ${func}: missing`);
+                        log(`Function ${func}: MISSING`);
+                        allGood = false;
+                    }
+                });
+            } else {
+                results.push('❌ Cannot test functions - MandiApp not found');
+                log('Language functions test: FAILED - No MandiApp');
+                allGood = false;
+            }
+            
+            showStatus('lang-functions-status', results.join('<br>'), allGood ? 'success' : 'error');
+        }
+        
+        function testDOMElements() {
+            log('Testing DOM elements...');
+            let results = [];
+            let allGood = true;
+            
+            const elements = [
+                { id: 'language-selector', name: 'Language Selector Button' },
+                { class: 'app-title', name: 'App Title' },
+                { class: 'language-btn', name: 'Language Buttons' },
+                { id: 'welcome-screen', name: 'Welcome Screen' },
+                { id: 'dashboard-screen', name: 'Dashboard Screen' }
+            ];
+            
+            elements.forEach(el => {
+                let element;
+                if (el.id) {
+                    element = document.getElementById(el.id);
+                } else if (el.class) {
+                    element = document.querySelector(`.${el.class}`);
+                }
+                
+                if (element) {
+                    results.push(`✅ ${el.name}: found`);
+                    log(`DOM element ${el.name}: FOUND`);
+                } else {
+                    results.push(`❌ ${el.name}: not found`);
+                    log(`DOM element ${el.name}: NOT FOUND`);
+                    allGood = false;
+                }
+            });
+            
+            showStatus('dom-status', results.join('<br>'), allGood ? 'success' : 'error');
+        }
+        
+        function testEventListeners() {
+            log('Testing event listeners...');
+            let results = [];
+            let allGood = true;
+            
+            // Test language selector click
+            const langSelector = document.getElementById('language-selector');
+            if (langSelector) {
+                // Check if it has click listeners (this is approximate)
+                const hasListeners = langSelector.onclick || langSelector.addEventListener;
+                if (hasListeners) {
+                    results.push('✅ Language selector has event listeners');
+                    log('Language selector events: FOUND');
+                } else {
+                    results.push('⚠️ Language selector event listeners unclear');
+                    log('Language selector events: UNCLEAR');
+                }
+            } else {
+                results.push('❌ Language selector not found for event testing');
+                log('Language selector events: ELEMENT NOT FOUND');
+                allGood = false;
+            }
+            
+            // Test language buttons
+            const langButtons = document.querySelectorAll('.language-btn');
+            if (langButtons.length > 0) {
+                results.push(`✅ Found ${langButtons.length} language buttons`);
+                log(`Language buttons: FOUND ${langButtons.length}`);
+            } else {
+                results.push('❌ No language buttons found');
+                log('Language buttons: NOT FOUND');
+                allGood = false;
+            }
+            
+            showStatus('events-status', results.join('<br>'), allGood ? 'success' : 'warning');
+        }
+        
+        async function testLanguageChange(language) {
+            log(`Testing language change to: ${language}`);
+            
+            if (!window.mandiApp) {
+                showStatus('live-test-status', '❌ Cannot test - MandiApp not available', 'error');
+                log('Language change test: FAILED - No MandiApp');
+                return;
+            }
+            
+            try {
+                const beforeTitle = document.querySelector('.app-title')?.textContent;
+                log(`Before change - Title: "${beforeTitle}"`);
+                
+                // Test direct language change
+                await window.mandiApp.updateUILanguage(language);
+                
+                setTimeout(() => {
+                    const afterTitle = document.querySelector('.app-title')?.textContent;
+                    log(`After change - Title: "${afterTitle}"`);
+                    
+                    if (beforeTitle !== afterTitle) {
+                        showStatus('live-test-status', `✅ Language changed successfully to ${language}`, 'success');
+                        log(`Language change to ${language}: SUCCESS`);
+                    } else {
+                        showStatus('live-test-status', `❌ Language change failed - title unchanged`, 'error');
+                        log(`Language change to ${language}: FAILED - No visual change`);
+                    }
+                    
+                    updateCurrentStatus();
+                }, 500);
+                
+            } catch (error) {
+                showStatus('live-test-status', `❌ Error changing language: ${error.message}`, 'error');
+                log(`Language change to ${language}: ERROR - ${error.message}`);
+            }
+        }
+        
+        function updateCurrentStatus() {
+            const titleEl = document.querySelector('.app-title');
+            const currentTitle = titleEl ? titleEl.textContent : 'Not found';
+            const currentLang = window.mandiApp ? window.mandiApp.currentLanguage : 'Unknown';
+            
+            document.getElementById('current-title').textContent = currentTitle;
+            document.getElementById('current-lang').textContent = currentLang;
+        }
+        
+        async function runFullTest() {
+            log('Starting full integration test...');
+            showStatus('integration-status', '🔄 Running full test...', 'info');
+            
+            await testBackend();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testStaticFiles();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            testJavaScript();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            testCSS();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            testMainApp();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            testLanguageFunctions();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            testDOMElements();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            testEventListeners();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            showStatus('integration-status', '✅ Full test completed - check individual sections for results', 'success');
+            log('Full integration test: COMPLETED');
+        }
+        
+        function clearResults() {
+            debugLog = [];
+            document.getElementById('debug-console').textContent = 'Console cleared...\n';
+            
+            const statusElements = [
+                'backend-status', 'static-status', 'js-status', 'css-status',
+                'app-status', 'lang-functions-status', 'dom-status', 'events-status',
+                'live-test-status', 'integration-status'
+            ];
+            
+            statusElements.forEach(id => {
+                document.getElementById(id).innerHTML = '';
+            });
+            
+            log('Debug results cleared');
+        }
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            log('Debug tool loaded');
+            updateCurrentStatus();
+            
+            // Auto-run basic tests
+            setTimeout(() => {
+                testJavaScript();
+                testMainApp();
+                updateCurrentStatus();
+            }, 1000);
+        });
+        
+        // Update status every 5 seconds
+        setInterval(updateCurrentStatus, 5000);
+    </script>
+</body>
+</html>

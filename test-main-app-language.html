@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Main App Language Switching</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        .test-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 2000;
+            max-width: 200px;
+        }
+        .highlight {
+            background: yellow !important;
+            color: black !important;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Test Info Panel -->
+    <div class="test-info">
+        <strong>Language Test</strong><br>
+        Current: <span id="current-lang">hi</span><br>
+        App Title: <span id="title-preview">बहुभाषी मंडी</span><br>
+        <button onclick="testDirectChange()" style="margin-top: 5px; padding: 2px 5px;">Test Direct</button>
+    </div>
+
+    <!-- Main App Structure (Simplified) -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title highlight">बहुभाषी मंडी</h1>
+                <div class="header-actions">
+                    <button id="language-selector" class="btn-icon" onclick="showLanguageModal()">
+                        🌐
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="highlight">डैशबोर्ड</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>Click the 🌐 button in the header to test language switching.</p>
+                        <p>Watch the highlighted elements change when you select a different language.</p>
+                        
+                        <div style="margin-top: 20px;">
+                            <h3>Test Elements:</h3>
+                            <ul>
+                                <li>App Title: <span class="highlight app-title">बहुभाषी मंडी</span></li>
+                                <li>Dashboard: <span class="highlight" id="dashboard-title">डैशबोर्ड</span></li>
+                                <li>Welcome: <span class="highlight" id="welcome-text">स्वागत है</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Simplified version of the main app language switching
+        let currentLanguage = 'hi';
+        
+        const translations = {
+            'hi': {
+                'app_title': 'बहुभाषी मंडी',
+                'dashboard': 'डैशबोर्ड',
+                'welcome': 'स्वागत है',
+                'select_language': 'भाषा चुनें',
+                'cancel': 'रद्द करें',
+                'change': 'बदलें'
+            },
+            'te': {
+                'app_title': 'బహుభాషా మార్కెట్',
+                'dashboard': 'డాష్‌బోర్డ్',
+                'welcome': 'స్వాగతం',
+                'select_language': 'భాష ఎంచుకోండి',
+                'cancel': 'రద్దు చేయండి',
+                'change': 'మార్చండి'
+            },
+            'ta': {
+                'app_title': 'பல்மொழி சந்தை',
+                'dashboard': 'டாஷ்போர்டு',
+                'welcome': 'வரவேற்கிறோம்',
+                'select_language': 'மொழியைத் தேர்ந்தெடுக்கவும்',
+                'cancel': 'ரத்து செய்',
+                'change': 'மாற்று'
+            },
+            'en': {
+                'app_title': 'Multilingual Market',
+                'dashboard': 'Dashboard',
+                'welcome': 'Welcome',
+                'select_language': 'Select Language',
+                'cancel': 'Cancel',
+                'change': 'Change'
+            }
+        };
+
+        function updateUI(language) {
+            console.log(`Updating UI to: ${language}`);
+            currentLanguage = language;
+            
+            const langTexts = translations[language] || translations['hi'];
+            
+            // Update all app-title elements
+            document.querySelectorAll('.app-title').forEach(el => {
+                el.textContent = langTexts.app_title;
+            });
+            
+            // Update dashboard title
+            const dashboardTitle = document.getElementById('dashboard-title');
+            if (dashboardTitle) dashboardTitle.textContent = langTexts.dashboard;
+            
+            // Update welcome text
+            const welcomeText = document.getElementById('welcome-text');
+            if (welcomeText) welcomeText.textContent = langTexts.welcome;
+            
+            // Update test info
+            document.getElementById('current-lang').textContent = language;
+            document.getElementById('title-preview').textContent = langTexts.app_title;
+            
+            // Update language selector
+            const languageNames = {
+                'hi': 'हि', 'te': 'తె', 'ta': 'த', 'en': 'En'
+            };
+            document.getElementById('language-selector').textContent = languageNames[language] || '🌐';
+            
+            console.log(`UI updated to ${language}`);
+        }
+
+        function showLanguageModal() {
+            console.log('Opening language modal...');
+            const texts = translations[currentLanguage] || translations['hi'];
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3 class="modal-title">${texts.select_language}</h3>
+                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="language-grid">
+                            <button class="language-btn ${currentLanguage === 'hi' ? 'selected' : ''}" data-lang="hi">हिंदी</button>
+                            <button class="language-btn ${currentLanguage === 'te' ? 'selected' : ''}" data-lang="te">తెలుగు</button>
+                            <button class="language-btn ${currentLanguage === 'ta' ? 'selected' : ''}" data-lang="ta">தமிழ்</button>
+                            <button class="language-btn ${currentLanguage === 'en' ? 'selected' : ''}" data-lang="en">English</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">${texts.cancel}</button>
+                        <button class="btn-primary" onclick="changeLanguageFromModal(this)">${texts.change}</button>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners for language selection
+            modal.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    modal.querySelectorAll('.language-btn').forEach(b => b.classList.remove('selected'));
+                    e.target.classList.add('selected');
+                });
+            });
+            
+            document.body.appendChild(modal);
+            setTimeout(() => modal.classList.add('open'), 10);
+        }
+
+        function changeLanguageFromModal(button) {
+            console.log('changeLanguageFromModal called');
+            const modal = button.closest('.modal-overlay');
+            const selectedBtn = modal.querySelector('.language-btn.selected');
+            
+            if (selectedBtn) {
+                const newLanguage = selectedBtn.dataset.lang;
+                console.log(`Changing language to: ${newLanguage}`);
+                
+                if (newLanguage !== currentLanguage) {
+                    updateUI(newLanguage);
+                    
+                    // Show success message
+                    const successMessages = {
+                        'hi': 'भाषा सफलतापूर्वक बदली गई',
+                        'te': 'భాష విజయవంతంగా మార్చబడింది',
+                        'ta': 'மொழி வெற்றிகரமாக மாற்றப்பட்டது',
+                        'en': 'Language changed successfully'
+                    };
+                    
+                    alert(successMessages[newLanguage] || successMessages['hi']);
+                }
+            }
+            
+            modal.remove();
+        }
+
+        function testDirectChange() {
+            const languages = ['hi', 'te', 'ta', 'en'];
+            const currentIndex = languages.indexOf(currentLanguage);
+            const nextIndex = (currentIndex + 1) % languages.length;
+            const nextLanguage = languages[nextIndex];
+            
+            console.log(`Direct change from ${currentLanguage} to ${nextLanguage}`);
+            updateUI(nextLanguage);
+        }
+
+        // Initialize
+        console.log('Test page loaded');
+        updateUI('hi');
+    </script>
+</body>
+</html>
