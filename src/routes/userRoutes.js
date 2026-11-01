@@ -1,11 +1,12 @@
 const express = require('express');
 const { asyncHandler } = require('../middleware/errorHandler');
+const { authenticateUser, authorizeSelfOrAdmin } = require('../middleware/auth');
 const UserManagementService = require('../services/UserManagementService');
 
 const router = express.Router();
 const userService = new UserManagementService();
 
-// Create user profile (Requirements 7.1, 7.2)
+// Create user profile (Requirements 7.1, 7.2) - Public registration
 router.post(
   '/profile',
   asyncHandler(async (req, res) => {
@@ -44,9 +45,11 @@ router.post(
   })
 );
 
-// Get user profile
+// Get user profile (Protected: Authenticated & Self-or-Admin only)
 router.get(
   '/profile/:userId',
+  authenticateUser,
+  authorizeSelfOrAdmin,
   asyncHandler(async (req, res) => {
     const { userId } = req.params;
     
@@ -66,9 +69,11 @@ router.get(
   })
 );
 
-// Update user preferences (Requirements 7.3, 7.4)
+// Update user preferences (Protected: Authenticated & Self-or-Admin only)
 router.put(
   '/preferences/:userId',
+  authenticateUser,
+  authorizeSelfOrAdmin,
   asyncHandler(async (req, res) => {
     const { userId } = req.params;
     const preferences = req.body;
@@ -101,7 +106,7 @@ router.put(
   })
 );
 
-// Validate language support (Requirements 7.5)
+// Validate language support (Requirements 7.5) - Public utility
 router.get(
   '/validate/language/:language',
   asyncHandler(async (req, res) => {
@@ -118,9 +123,11 @@ router.get(
   })
 );
 
-// Sync offline data
+// Sync offline data (Protected: Authenticated & Self-or-Admin only)
 router.post(
   '/sync/:userId',
+  authenticateUser,
+  authorizeSelfOrAdmin,
   asyncHandler(async (req, res) => {
     const { userId } = req.params;
     const { localData } = req.body;
@@ -135,9 +142,10 @@ router.post(
   })
 );
 
-// Get user session
+// Get user session (Protected: Authenticated only)
 router.get(
   '/session/:sessionId',
+  authenticateUser,
   asyncHandler(async (req, res) => {
     const { sessionId } = req.params;
     
